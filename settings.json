@@ -1,0 +1,14 @@
+{
+	"output_folder": "images/converted",
+	"transformations": [{
+		"width": "40"
+	}, {
+		"width": "200"
+	}, {
+		"width": "400"
+	}, {
+		"width": "600"
+	}, {
+		"width": "1000"
+	}]
+}
