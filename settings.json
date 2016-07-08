@@ -1,6 +1,6 @@
 {
 	"output_folder": "images/converted/%OUTPUT_WIDTH%/",
-	"output_filename":"%FILENAME%%FILE_EXTENSION%",
+	"output_filename":"%FILENAME%.%FILE_EXTENSION%",
 	"transformations": [{
 		"width": "40"
 	}, {

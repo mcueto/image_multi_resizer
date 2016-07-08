@@ -12,11 +12,13 @@ $settings = json_decode($settings_list);
 function optimize($input_path, $output_width, $output_folder){
   global $photos, $settings;
 
+  $input_file_info = pathinfo($input_path);
+
   // Set the wildcards to replace
   $WILDCARDS = [
     '%OUTPUT_WIDTH%'  => $output_width,
-    '%FILENAME%'      => basename($input_path),
-    '%FILE_EXTENSION%'=> '',
+    '%FILENAME%'      => $input_file_info["filename"],
+    '%FILE_EXTENSION%'=> $input_file_info["extension"],
   ];
 
   // Get the configured(with wildcards) filename and folder
