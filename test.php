@@ -2,30 +2,51 @@
 require_once('vendor/autoload.php');
 use nwtn\Respimg as Respimg;
 
-function optimize($photo, $width, $output_folder){
-  $input_filename = $photo;
-  $output_filename = basename($photo);
-  $output_width = $width;
-
-  $output_folder = "$output_folder"."/"."$width";
-
-  $dir_exists = is_dir($output_folder);
-
-  if (!$dir_exists){
-    $folder_created = mkdir($output_folder, 0755, true);
-    $dir_exists = true;
-  }
-
-  $image = new Respimg($input_filename);
-  $image->smartResize($output_width, 0, false);
-  $image->writeImage($output_folder."/".$output_filename);
-}
-
 $photos_list = file_get_contents('photos.json');
 $settings_list = file_get_contents('settings.json');
 
+
 $photos = json_decode($photos_list);
 $settings = json_decode($settings_list);
+
+function optimize($input_path, $output_width, $output_folder){
+  global $photos, $settings;
+
+  // Set the wildcards to replace
+  $WILDCARDS = [
+    '%OUTPUT_WIDTH%'  => $output_width,
+    '%FILENAME%'      => basename($input_path),
+    '%FILE_EXTENSION%'=> '',
+  ];
+
+  // Get the configured(with wildcards) filename and folder
+  $OUTPUT_CONFIG = [
+    'OUTPUT_FOLDER'   => $settings->{'output_folder'},
+    'OUTPUT_FILENAME' => $settings->{'output_filename'},
+  ];
+
+  // Replace wildcards in $OUTPUT_CONFIG
+  foreach ($WILDCARDS as $wildcard => $value) {
+    $OUTPUT_CONFIG  = str_replace($wildcard, $value, $OUTPUT_CONFIG);
+  }
+
+  // Check if output folder exists
+  $dir_exists   = is_dir($OUTPUT_CONFIG['OUTPUT_FOLDER']);
+
+  if (!$dir_exists){
+    $folder_created = mkdir($OUTPUT_CONFIG['OUTPUT_FOLDER'], 0755, true);
+    $dir_exists     = true;
+  }
+
+  // Instantiate the image
+  $image = new Respimg($input_path);
+
+  // Optimize the image to the given width
+  $image->smartResize($output_width, 0, false);
+
+  // Create the new & optimized image file
+  $image->writeImage($OUTPUT_CONFIG['OUTPUT_FOLDER'].$OUTPUT_CONFIG['OUTPUT_FILENAME']);
+}
 
 foreach ($photos as $photo) {
   foreach ($settings->{'transformations'} as $transformation) {
